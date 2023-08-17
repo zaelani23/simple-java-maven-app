@@ -1,11 +1,12 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.9.0'
-            args '-v /root/.m2:/root/.m2'
-        }
-    }
+    agent any
     stages {
+        agent {
+            docker {
+                image 'maven:3.9.0'
+                args '-v /root/.m2:/root/.m2'
+            }
+        }
         stage('Build') {
             steps {
                 sh 'mvn -B -DskipTests clean package'
@@ -18,12 +19,12 @@ pipeline {
             post {
                 always {
                     junit 'target/surefire-reports/*.xml'
+                    sh './jenkins/scripts/deliver.sh'
                 }
             }
         }
-        stage('Deploy') {
+        stage('Deploy') { 
             steps {
-                sh './jenkins/scripts/deliver.sh'
                 script {
                     def filename = env.NAME + "-" + env.VERSION + ".jar"
                     node('any') {
