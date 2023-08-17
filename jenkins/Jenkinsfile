@@ -31,15 +31,13 @@ pipeline {
                 }
                 success {
                     sh './jenkins/scripts/deliver.sh'
-                    script {
-                        JAR_FILE = sh(script: 'find ./target -name "*.jar"', returnStdout: true).trim()
-                    }
                 }
             }
         }
         stage('Deploy') { 
             steps {
                 script {
+                    JAR_FILE = sh(script: 'find ./target -name "*.jar"', returnStdout: true).trim()
                     sshagent(credentials: ['ec2-user']) {
                         sh 'scp -o StrictHostKeyChecking=no -r ./target/${JAR_FILE} ec2-user@3.89.182.48:/home/ec2-user'
                         sh 'ssh -o StrictHostKeyChecking=no ec2-user@3.89.182.48 java -jar /home/ec2-user/${JAR_FILE}'
