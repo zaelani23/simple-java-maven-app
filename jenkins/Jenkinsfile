@@ -5,6 +5,9 @@ pipeline {
             args '-v /root/.m2:/root/.m2'
         }
     }
+    environment {
+        SSH_CREDENTIALS = credentials('ec2-user') // Replace with your SSH credentials ID
+    }
     stages {
         stage('Build') {
             steps {
@@ -26,11 +29,9 @@ pipeline {
                 sh './jenkins/scripts/deliver.sh'
                 script {
                     def filename = env.NAME + "-" + env.VERSION + ".jar"
-                    sshagent(credentials: ['ec2-user']) {
-                        sh 'scp target/${fileName} ec2-user@ec2-3-89-182-48.compute-1.amazonaws.com:/home/ec2-user'
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@ec2-3-89-182-48.compute-1.amazonaws.com java -jar /home/ec2-user/${fileName}"
-                        sleep(time: 1, unit: 'MINUTES')
-                    }
+                    sh 'scp -i ${SSH_CREDENTIALS} target/${fileName} ec2-user@ec2-3-89-182-48.compute-1.amazonaws.com:/home/ec2-user'
+                    sh "ssh -i ${SSH_CREDENTIALS} ec2-user@ec2-3-89-182-48.compute-1.amazonaws.com java -jar /home/ec2-user/${fileName}"
+                    sleep(time: 1, unit: 'MINUTES')
                 }
             }
         }
