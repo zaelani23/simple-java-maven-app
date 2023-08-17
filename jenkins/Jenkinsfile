@@ -35,8 +35,8 @@ pipeline {
             steps {
                 script {
                     sshagent(credentials: ['ec2-user']) {
-                        sh 'scp -r ./target ec2-user@ec2-3-89-182-48.compute-1.amazonaws.com:/home/ec2-user'
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@ec2-3-89-182-48.compute-1.amazonaws.com java -jar /home/ec2-user/${fileName}"
+                        sh 'scp -r ./target ec2-user@3.89.182.48:/home/ec2-user'
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@3.89.182.48 java -jar /home/ec2-user/${fileName}"
                         sleep(time: 1, unit: 'MINUTES')
                     }
                 }
