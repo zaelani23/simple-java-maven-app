@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+        JAR_FILE = ''
+    }
     stages {
         stage('Build') {
             agent {
@@ -29,7 +32,7 @@ pipeline {
                 success {
                     sh './jenkins/scripts/deliver.sh'
                     script {
-                        JAR_FILE = sh(script: 'find . -name "./target/*.jar"', returnStdout: true).trim()
+                        JAR_FILE = sh(script: 'find ./target -name "*.jar"', returnStdout: true).trim()
                     }
                 }
             }
