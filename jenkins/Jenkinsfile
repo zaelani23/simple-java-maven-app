@@ -25,6 +25,8 @@ pipeline {
             post {
                 always {
                     junit 'target/surefire-reports/*.xml'
+                }
+                success {
                     sh './jenkins/scripts/deliver.sh'
                 }
             }
